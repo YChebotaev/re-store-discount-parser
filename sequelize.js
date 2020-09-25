@@ -1,6 +1,5 @@
 const { Sequelize } = require('sequelize')
 
-const sequelize = new Sequelize('sqlite::memory:')
-// const sequelize = new Sequelize('sqlite:./db.sqlite3')
+const sequelize = new Sequelize(process.env.DATABASE)
 
 module.exports = sequelize

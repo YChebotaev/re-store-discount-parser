@@ -24,6 +24,9 @@ const Item = sequelize.define('Item', {
   price: {
     type: DataTypes.STRING
   },
+  oldPrice: {
+    type: DataTypes.STRING
+  },
   city: {
     type: DataTypes.STRING
   },

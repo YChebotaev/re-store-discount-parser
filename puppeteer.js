@@ -1,19 +1,20 @@
 const puppeteer = require('puppeteer')
 const BrowserLauncher = require('./lib/classes/BrowserLauncher')
 
-const config = {
-  headless: false,
-  args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-notifications']
-}
-
-// if (process.platform === 'darwin') {
-//   Object.assign(config, {
-//     executablePath:
-//       '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
-//   })
-// }
-
-const launcher = new BrowserLauncher(config)
+const launcher = new BrowserLauncher({
+  timeout: 0,
+  headless: process.env.PUPPETEER_HEADLESS === 'yes',
+  args: [
+    // '--disable-gpu', //
+    // '--disable-dev-shm-usage', //
+    '--disable-setuid-sandbox',
+    // '--no-first-run',
+    '--no-sandbox'
+    // '--no-zygote', //
+    // '--single-process' //
+    // '--disable-notifications' //
+  ]
+})
 
 exports.launcher = launcher
 exports.puppeteer = puppeteer

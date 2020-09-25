@@ -5,7 +5,6 @@ module.exports = {
       watch: '.'
     }
   ],
-
   deploy: {
     production: require('./ecosystem.deploy.production')
   }

@@ -116,5 +116,7 @@ dist
 .pnp.*
 
 ecosystem.deploy.production.js
+.env
+db.sqlite3
 .vscode/
 keys/

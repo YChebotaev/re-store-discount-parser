@@ -1,49 +1,50 @@
 const { CronJob } = require('cron')
-const { telegram } = require('../bot')
+const { nanoid } = require('nanoid')
+const {
+  bot: { telegram }
+} = require('../bot')
 const DiscountPage = require('../pages/DiscountPage')
 const ItemMessage = require('../lib/classes/ItemMessage')
 const Item = require('../models/Item')
 const Chat = require('../models/Chat')
 const RunState = require('../models/RunState')
 const CITIES = require('../constants/cities')
+const parsePrice = require('../lib/utils/parsePrice')
 
 class DiscountJob extends CronJob {
   constructor (runId, time, timezone) {
-    const discountPage = new DiscountPage()
-
     const run = async () => {
+      let jobId, discountPage
       try {
+        jobId = nanoid()
+        discountPage = new DiscountPage()
         const isFirstRun = await this.isFirstRun()
 
         const chats = await Chat.findAll()
 
-        // DEBUG
-        chats.push({
-          id: 350570845,
-          async sendMessage (telegram, message) {
-            await telegram.sendMessage(message.forChatId, message.toString(), {
-              parse_mode: message.parseMode,
-              disable_notification: false
-            })
-          }
-        })
-        // END OF DEBUG
-
         await discountPage.init()
         await discountPage.open()
         await discountPage.confirmGuessedLocation()
-        await discountPage.closeSubscription()
+
+        if (process.env.PUPPETEER_HEADLESS === 'no') {
+          await discountPage.closeSubscription()
+        }
 
         for (let city of CITIES) {
           await discountPage.selectCity(city)
+
           const sections = await discountPage.getSections()
 
           for (let section of sections) {
             await section.expand()
+
             for (let data of await section.getItems()) {
               data.section = await section.getTitle()
               data.city = city
-              await this.notifySectionItem(chats, data, isFirstRun)
+
+              if (parsePrice(data.price) >= 10000) {
+                await this.notifySectionItem(chats, data, isFirstRun)
+              }
             }
           }
         }
@@ -84,8 +85,16 @@ class DiscountJob extends CronJob {
   }
 
   async setFirstRun (isFirstRun) {
-    const state = await RunState.findByPk(this.runId)
-    if (state) {
+    const [state, isNew] = await RunState.findOrCreate({
+      where: {
+        id: this.runId
+      },
+      defaults: {
+        id: this.runId,
+        firstRun: isFirstRun
+      }
+    })
+    if (state && !isNew) {
       state.isFirstRun = isFirstRun
       await state.save()
     }

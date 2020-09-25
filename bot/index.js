@@ -1,8 +1,15 @@
 const { Telegraf } = require('telegraf')
-const onStart = require('./commands/start')
+const StartCommand = require('./commands/start')
+const NextDatesCommand = require('./commands/next_dates')
 
-const bot = new Telegraf('1343186647:AAHLzYPON6yMSSMd3nqB9pXXk3baOmPITx8')
+const start = new StartCommand()
+const nextDates = new NextDatesCommand()
 
-bot.start(onStart)
+const bot = new Telegraf(process.env.BOT_TOKEN)
 
-module.exports = bot
+bot.start(start.getHandler())
+bot.command(nextDates.getToken(), nextDates.getHandler())
+
+exports.bot = bot
+exports.start = start
+exports.nextDates = nextDates

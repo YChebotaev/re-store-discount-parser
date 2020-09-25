@@ -1,4 +1,6 @@
 const PageObject = require('../lib/classes/PageObject')
+const { nanoid } = require('nanoid')
+const path = require('path')
 const DiscountSection = require('./sections/discountPage/DiscountSection')
 const supress = require('../lib/utils/supress')
 const SECTIONS = require('../constants/sections')
@@ -6,14 +8,24 @@ const SECTIONS = require('../constants/sections')
 class DiscountPage extends PageObject {
   async open () {
     await super.open('https://www.re-store.ru/discount/')
-    await this.page.waitFor(10 * 1000)
+    try {
+      await this.page.waitForNavigation({
+        timeout: 60 * 1000
+      })
+    } catch (error) {
+      if (error.message.includes('Navigation timeout of')) {
+        supress(error)
+      }
+    } finally {
+      await this.page.waitFor(6 * 1000)
+    }
   }
 
   async confirmGuessedLocation () {
     try {
       await this.page.waitForSelector('.choose-city-cont', {
         visible: true,
-        timeout: 5 * 1000
+        timeout: 6 * 1000
       })
       await this.page.click('.accept-city')
     } catch (error) {
@@ -71,28 +83,6 @@ class DiscountPage extends PageObject {
 
     return sections
   }
-
-  // async getItems (sectionNames) {
-  //   const items = []
-  //   await this.page.waitForSelector('.r-discount-sections-wrap')
-
-  //   const sections = await this.$discountSections()
-
-  //   for (let section of sections) {
-  //     const sectionTitle = await section.getTitle()
-  //     if (sectionNames.includes(sectionTitle)) {
-  //       await section.expand()
-  //       const sectionItems = await section.getItems()
-  //       for (let item of sectionItems) {
-  //         item.section = sectionTitle
-  //         item.city = this.city
-  //         items.push(item)
-  //       }
-  //     }
-  //   }
-
-  //   return items
-  // }
 }
 
 module.exports = DiscountPage
