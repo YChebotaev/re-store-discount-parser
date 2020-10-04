@@ -108,11 +108,6 @@ class DiscountSection extends PageSection {
         el => el.innerText
       )
 
-      item.oldPrice = await row.$eval(
-        '.r-discount-table__product-price-old',
-        el => el.innerText
-      )
-
       // const { width, height } = await row.boundingBox()
       // item.screenshot = {
       //   width,
