@@ -3,10 +3,9 @@ const supress = require('../../../lib/utils/supress')
 
 class DiscountSection extends PageSection {
   async expand () {
-    console.time('expand')
     const btnMore = await this.el.$('.r-discount-section__btn-more')
 
-    if (!btnMore) return void console.timeEnd('expand')
+    if (!btnMore) return
 
     try {
       await btnMore.click()
@@ -50,8 +49,6 @@ class DiscountSection extends PageSection {
       } else {
         throw error
       }
-    } finally {
-      console.timeEnd('expand')
     }
   }
 
