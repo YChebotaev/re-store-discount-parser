@@ -12,6 +12,12 @@ const RunState = sequelize.define('RunState', {
   },
   lastCheck: {
     type: DataTypes.DATE
+  },
+  blocked: {
+    type: DataTypes.BOOLEAN
+  },
+  blockedBy: {
+    type: DataTypes.STRING
   }
 })
 

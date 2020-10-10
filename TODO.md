@@ -18,3 +18,11 @@
 
 ALTER TABLE `RunStates`
 ADD COLUMN `lastCheck` DATETIME;
+
+[] Выполнить коды:
+
+ALTER TABLE `RunStates`
+ADD COLUMN `blocked` TINYINT(1);
+
+ALTER TABLE `RunStates`
+ADD COLUMN `blockedBy` VARCHAR(255);

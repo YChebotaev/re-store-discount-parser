@@ -14,9 +14,18 @@ const parsePrice = require('../lib/utils/parsePrice')
 class DiscountJob extends CronJob {
   constructor (runId, time) {
     const run = async () => {
-      let jobId, discountPage
+      let jobId, discountPage, runState
       try {
         jobId = nanoid()
+
+        runState = await this.getOrCreateRunState()
+
+        if (runState.blocked) return
+
+        runState.blocked = true
+        runState.blockedBy = jobId
+        await runState.save()
+
         discountPage = new DiscountPage()
         await discountPage.init()
         await discountPage.open()
@@ -26,12 +35,10 @@ class DiscountJob extends CronJob {
           await discountPage.closeSubscription()
         }
 
-        const runState = await this.getOrCreateRunState()
-        const { firstRun, lastCheck } = runState
         const updateTime = await discountPage.getUpdateTime()
-        const diff = updateTime - lastCheck
+        const diff = updateTime - runState.lastCheck
 
-        if (!firstRun && lastCheck && diff) {
+        if (!runState.firstRun && runState.lastCheck && diff) {
           const chats = await Chat.findAll()
 
           for (let city of CITIES) {
@@ -47,7 +54,7 @@ class DiscountJob extends CronJob {
                 data.city = city
 
                 if (parsePrice(data.price) >= 10000) {
-                  await this.notifySectionItem(chats, data, firstRun)
+                  await this.notifySectionItem(chats, data, runState.firstRun)
                 }
               }
             }
@@ -60,7 +67,13 @@ class DiscountJob extends CronJob {
       } catch (error) {
         throw error
       } finally {
-        await discountPage.close()
+        if (discountPage) await discountPage.close()
+
+        if (runState.blockedBy === jobId) {
+          runState.blockedBy = ''
+          runState.blocked = false
+          await runState.save()
+        }
       }
     }
 

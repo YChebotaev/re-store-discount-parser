@@ -16,7 +16,7 @@ class DiscountPage extends PageObject {
         supress(error)
       }
     } finally {
-      await this.page.waitFor(6 * 1000)
+      // await this.page.waitFor(6 * 1000)
     }
   }
 

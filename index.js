@@ -10,7 +10,7 @@ const jobs = new Set()
 
 jobs.add(new DiscountJob(runId, '* * * * *'))
 
-Promise.all([bot.launch(), sequelize.sync()]).then(async () => {
+Promise.all([/* bot.launch(), */ sequelize.sync()]).then(async () => {
   Array.from(jobs).map(job => job.start())
   nextDates.injectJobs(jobs)
 })
