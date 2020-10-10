@@ -6,10 +6,15 @@
 
 [x] Задеплоить
 
-[] Удалить jobs/DiscountJob.js:20-30
+[x] Удалить jobs/DiscountJob.js:20-30
 
 [x] Удалить lib/classes/ChangesMessage.old.js
 
 [x] Заменить демо-задачу на рабочую index.js:11-13
 
 [x] Удалить pupeeter.js:9-14
+
+[x] Выполнить код:
+
+ALTER TABLE `RunStates`
+ADD COLUMN `lastCheck` DATETIME;

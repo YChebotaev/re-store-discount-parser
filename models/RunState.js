@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize')
 const sequelize = require('../sequelize')
+const { DateTime } = require('luxon')
 
 const RunState = sequelize.define('RunState', {
   id: {
@@ -8,6 +9,9 @@ const RunState = sequelize.define('RunState', {
   },
   firstRun: {
     type: DataTypes.BOOLEAN
+  },
+  lastCheck: {
+    type: DataTypes.DATE
   }
 })
 

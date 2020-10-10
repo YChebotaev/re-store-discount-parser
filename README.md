@@ -24,7 +24,8 @@ Via [@BotFather](https://t.me/botfather)
 echo "NODE_ENV=development
 BOT_TOKEN=BOT_TOKEN
 DATABASE=sqlite::db.sqlite3
-PUPPETEER_HEADLESS=no" > .env
+PUPPETEER_HEADLESS=no
+ZONE=Europe/Moscow" > .env
 ```
 
 ## Run
@@ -109,7 +110,8 @@ echo "module.exports = {
     NODE_ENV: 'production',
     BOT_TOKEN: BOT_TOKEN,
     DATABASE: 'sqlite:db.sqlite3',
-    PUPPETEER_HEADLESS: 'yes'
+    PUPPETEER_HEADLESS: 'yes',
+    ZONE: 'Europe/Moscow'
   }
 }" > ecosystem.deploy.production.js
 ```

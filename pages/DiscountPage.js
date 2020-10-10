@@ -1,6 +1,5 @@
 const PageObject = require('../lib/classes/PageObject')
-const { nanoid } = require('nanoid')
-const path = require('path')
+const { DateTime } = require('luxon')
 const DiscountSection = require('./sections/discountPage/DiscountSection')
 const supress = require('../lib/utils/supress')
 const SECTIONS = require('../constants/sections')
@@ -82,6 +81,18 @@ class DiscountPage extends PageObject {
     }
 
     return sections
+  }
+
+  async getUpdateTime () {
+    const updateTimeText = await this.page.$eval(
+      '.r-discount-search__update-time',
+      el => el.innerText
+    )
+    const dateTime = DateTime.fromFormat(updateTimeText, 'HH:mm', {
+      zone: process.env.ZONE
+    })
+
+    return new Date(dateTime.toISO())
   }
 }
 

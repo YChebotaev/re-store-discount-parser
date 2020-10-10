@@ -12,16 +12,12 @@ const CITIES = require('../constants/cities')
 const parsePrice = require('../lib/utils/parsePrice')
 
 class DiscountJob extends CronJob {
-  constructor (runId, time, timezone) {
+  constructor (runId, time) {
     const run = async () => {
       let jobId, discountPage
       try {
         jobId = nanoid()
         discountPage = new DiscountPage()
-        const isFirstRun = await this.isFirstRun()
-
-        const chats = await Chat.findAll()
-
         await discountPage.init()
         await discountPage.open()
         await discountPage.confirmGuessedLocation()
@@ -30,26 +26,37 @@ class DiscountJob extends CronJob {
           await discountPage.closeSubscription()
         }
 
-        for (let city of CITIES) {
-          await discountPage.selectCity(city)
+        const runState = await this.getOrCreateRunState()
+        const { firstRun, lastCheck } = runState
+        const updateTime = await discountPage.getUpdateTime()
+        const diff = updateTime - lastCheck
 
-          const sections = await discountPage.getSections()
+        if (!firstRun && lastCheck && diff) {
+          const chats = await Chat.findAll()
 
-          for (let section of sections) {
-            await section.expand()
+          for (let city of CITIES) {
+            await discountPage.selectCity(city)
 
-            for (let data of await section.getItems()) {
-              data.section = await section.getTitle()
-              data.city = city
+            const sections = await discountPage.getSections()
 
-              if (parsePrice(data.price) >= 10000) {
-                await this.notifySectionItem(chats, data, isFirstRun)
+            for (let section of sections) {
+              await section.expand()
+
+              for (let data of await section.getItems()) {
+                data.section = await section.getTitle()
+                data.city = city
+
+                if (parsePrice(data.price) >= 10000) {
+                  await this.notifySectionItem(chats, data, firstRun)
+                }
               }
             }
           }
         }
 
-        await this.setFirstRun(true)
+        runState.lastCheck = updateTime
+        runState.firstRun = false
+        await runState.save()
       } catch (error) {
         throw error
       } finally {
@@ -57,7 +64,7 @@ class DiscountJob extends CronJob {
       }
     }
 
-    super(time, run, null, false, timezone)
+    super(time, run, null, false, process.env.ZONE)
 
     Object.assign(this, { runId })
   }
@@ -76,28 +83,13 @@ class DiscountJob extends CronJob {
     }
   }
 
-  async isFirstRun () {
-    const state = await RunState.findByPk(this.runId)
-    if (state) {
-      return state.isFirstRun
-    }
-    return true
-  }
-
-  async setFirstRun (isFirstRun) {
-    const [state, isNew] = await RunState.findOrCreate({
-      where: {
-        id: this.runId
-      },
-      defaults: {
-        id: this.runId,
-        firstRun: isFirstRun
-      }
+  async getOrCreateRunState () {
+    const [runState] = await RunState.findOrCreate({
+      where: { id: this.runId },
+      defaults: { id: this.runId, firstRun: true }
     })
-    if (state && !isNew) {
-      state.isFirstRun = isFirstRun
-      await state.save()
-    }
+
+    return runState
   }
 }
 

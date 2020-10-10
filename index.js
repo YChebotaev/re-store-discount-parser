@@ -8,15 +8,7 @@ const RunState = require('./models/RunState')
 const runId = nanoid()
 const jobs = new Set()
 
-if (process.env.NODE_ENV === 'production') {
-  // jobs.add(new DiscountJob(runId, '*/10 7-22 * * 1', 'Europe/Moscow'))
-  // jobs.add(new DiscountJob(runId, '15 * * * * *', 'Europe/Moscow'))
-  jobs.add(new DiscountJob(runId, '15 7-22 * * *', 'Europe/Moscow'))
-} else if (process.env.NODE_ENV === 'development') {
-  const job = new DiscountJob(runId, '*/10 * * * *', 'Europe/Moscow')
-  jobs.add(job)
-  console.log(`Job will run at ${job.nextDate().format('hh:mm Z')}`)
-}
+jobs.add(new DiscountJob(runId, '* * * * *'))
 
 Promise.all([bot.launch(), sequelize.sync()]).then(async () => {
   Array.from(jobs).map(job => job.start())
