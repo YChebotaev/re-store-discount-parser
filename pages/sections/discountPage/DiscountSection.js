@@ -66,8 +66,8 @@ class DiscountSection extends PageSection {
       const item = {}
 
       item.id = await row.$eval(
-        '.r-discount-table__btn-buy',
-        el => el.dataset.productId
+        '.r-discount-table__product-article',
+        el => el.innerText
       )
 
       item.article = await row.$eval(
