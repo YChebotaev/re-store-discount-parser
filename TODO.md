@@ -19,10 +19,18 @@
 ALTER TABLE `RunStates`
 ADD COLUMN `lastCheck` DATETIME;
 
-[] Выполнить коды:
+[x] Выполнить коды:
 
 ALTER TABLE `RunStates`
 ADD COLUMN `blocked` TINYINT(1);
 
 ALTER TABLE `RunStates`
 ADD COLUMN `blockedBy` VARCHAR(255);
+
+[x] Выполнить в базе:
+
+ALTER TABLE `RunStates`
+ADD COLUMN `latestNewMessage` DATETIME;
+
+ALTER TABLE `RunStates`
+ADD COLUMN `latestUpdateMessage` DATETIME;

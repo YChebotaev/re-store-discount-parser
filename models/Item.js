@@ -35,6 +35,12 @@ const Item = sequelize.define('Item', {
   },
   screenshot: {
     type: DataTypes.VIRTUAL
+  },
+  latestNewMessage: {
+    type: DataTypes.DATE
+  },
+  latestUpdateMessage: {
+    type: DataTypes.DATE
   }
 })
 
