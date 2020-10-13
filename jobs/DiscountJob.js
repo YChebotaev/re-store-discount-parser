@@ -83,17 +83,22 @@ class DiscountJob extends CronJob {
   }
 
   async notifySectionItem (chats, data, firstRun) {
-    const [item, isNew] = await Item.findOrCreate({
+    const [item, created] = await Item.findOrCreate({
       where: { id: data.id },
       defaults: data
     })
 
+    if (!created) {
+      await item.set(data)
+      await item.save()
+    }
+
     if (firstRun) return
 
     for (let chat of chats) {
-      const message = new ItemMessage(chat, item, isNew)
+      const message = new ItemMessage(chat, item, created)
       await chat.sendMessage(telegram, message)
-      if (isNew) {
+      if (created) {
         item.latestNewMessage = new Date()
       } else {
         item.latestUpdateMessage = new Date()

@@ -29,8 +29,8 @@ ADD COLUMN `blockedBy` VARCHAR(255);
 
 [x] Выполнить в базе:
 
-ALTER TABLE `RunStates`
+ALTER TABLE `Items`
 ADD COLUMN `latestNewMessage` DATETIME;
 
-ALTER TABLE `RunStates`
+ALTER TABLE `Items`
 ADD COLUMN `latestUpdateMessage` DATETIME;
