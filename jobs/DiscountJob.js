@@ -38,7 +38,12 @@ class DiscountJob extends CronJob {
         const updateTime = await discountPage.getUpdateTime()
         const diff = updateTime - runState.lastCheck
 
-        if (!runState.firstRun && runState.lastCheck && diff) {
+        if (runState.lastCheck && diff) {
+          await discountPage.page.screenshot({
+            path: 'screenshot.png',
+            type: 'png'
+          })
+
           const chats = await Chat.findAll()
 
           for (let city of CITIES) {
