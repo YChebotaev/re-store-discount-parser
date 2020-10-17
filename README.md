@@ -25,8 +25,7 @@ echo "NODE_ENV=development
 BOT_TOKEN=BOT_TOKEN
 DATABASE=sqlite::db.sqlite3
 PUPPETEER_HEADLESS=no
-ZONE=Europe/Moscow
-USER_AGENT=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36" > .env
+ZONE=Europe/Moscow" > .env
 ```
 
 ## Run
@@ -112,8 +111,7 @@ echo "module.exports = {
     BOT_TOKEN: BOT_TOKEN,
     DATABASE: 'sqlite:db.sqlite3',
     PUPPETEER_HEADLESS: 'yes',
-    ZONE: 'Europe/Moscow',
-    USER_AGENT: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.75 Safari/537.36'
+    ZONE: 'Europe/Moscow'
   }
 }" > ecosystem.deploy.production.js
 ```
